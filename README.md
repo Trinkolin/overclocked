@@ -1,8 +1,8 @@
-# Overclocked
+# Overclocked - a Devoxx robot game
 
 > **The robots can do their jobs. They just don't know when to stop. You're the only one who noticed.**
 
-![Gameplay: Droid runs low on energy; the player brings Voxxy over and holds E until Droid recovers](docs/overclocked.gif)
+![Gameplay: a Monday at Devoxx, the player steers Voxxy while Droid and Biggy work on their own](docs/overclocked.gif)
 
 **Overclocked** is a browser game created for [The Robot Games](https://game.devoxx.be), a Devoxx Belgium competition. It takes place over a full Devoxx week, on both floors of the Kinepolis Antwerp.
 
