@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overclocked · a Devoxx robot game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="h-left">
+      <div id="h-clock">9:00</div>
+      <div><div id="h-title">Devoxx · day 1</div><div id="h-left"></div></div>
+    </div>
+    <div class="h-mid">
+      <div class="bar"><div id="h-bar"></div></div>
+      <div id="h-sat"></div>
+    </div>
+    <div class="h-right" id="h-issues"></div>
+    <canvas id="h-stack" title="The building, stacked: both floors and their staircases. Click a floor to look at it."></canvas>
+    <button id="h-floor" title="Switch the view between the two floors (F, Page Up, Page Down)">⇅ Floor</button>
+    <button id="h-ai" title="Let the AI run all three robots (0). Tap a robot to take one back.">🤖 AI</button>
+    <div id="h-watch" class="hidden" title="The AI does the jobs; nobody looks after the robots. F switches the floor you see."></div>
+    <button id="h-speed" title="Speed up the day: ×1, ×2 (T)">⏩ ×1</button>
+    <div id="cards"></div>
+    <div id="touch" class="hidden">
+      <div id="stick"><div id="knob"></div></div>
+      <button id="btn-e">E<small>hold</small></button>
+      <button id="btn-pause" title="Pause">⏸</button>
+    </div>
+  </div>
+  <div id="rotate"><span class="phone">📱</span>Turn your phone sideways for a bigger view<small>tap to close</small></div>
+  <div id="toasts"></div>
+  <button id="mute" title="Mute (M)">🔊</button>
+
+  <section id="title" class="overlay">
+    <div class="panel wide">
+      <!-- 1. welcome -->
+      <div class="step" data-step="1">
+        <div class="kicker">DEVOXX BELGIUM · KINEPOLIS ANTWERP</div>
+        <h1>Overclocked</h1>
+        <p class="hook">The robots can do their jobs.<br>They just don't know when to stop.<br><b>You're the only one who noticed.</b></p>
+        <p class="lead spaced"><span>Voxxy fixes, Droid guides, Biggy keeps order. The AI does the work.</span>
+          <span class="yourjob"><b>Your job:</b> notice when one is running low, stay with it, send it to recharge.</span>
+          <span><b>For a whole Devoxx week.</b></span></p>
+        <div id="hero"></div>
+        <button id="t-start" class="primary">Start ▶</button>
+        <p class="keys" id="t-best"></p>
+      </div>
+      <!-- 2. pick the robot you steer first -->
+      <div class="step" data-step="2">
+        <h2>Which robot do you steer first?</h2>
+        <p class="lead spaced"><span>You can switch any time with <b>1 2 3</b>, or by tapping a robot.</span><span>The other two work on their own (AI).</span></p>
+        <div id="t-pick" class="pick"></div>
+        <div class="row"><button id="t-back2">◀ Back</button><button id="t-next" class="primary">Next ▶</button></div>
+      </div>
+      <!-- 3. the few rules that matter, and the day -->
+      <div class="step" data-step="3">
+        <h2>How to keep them going</h2>
+        <div class="rules">
+          <div>🔋 Running low? Bring the robot you steer next to it and hold <b>E</b></div>
+          <div>⚡ Worn out? It stops working and slowly heads for a <b>charging base</b> (lounge upstairs, reception downstairs). Its job waits.</div>
+          <div>↕️ Two floors: walk onto the stairs to reach reception and the exhibition hall</div>
+          <div>😠 Breakdowns, lost attendees and worn-out robots cost satisfaction</div>
+          <div>★ you make it to closing time · ★ no robot wears out · ★ the attendees end the day 75% satisfied</div>
+        </div>
+        <label class="opt"><input type="checkbox" id="t-arrow" checked> Show the guide arrow <small>(yellow: your robot's job · green: a robot that needs you)</small></label>
+        <p class="goal">Devoxx lasts a week. Get through each day with the <b>attendees' satisfaction</b> above zero. If all three robots are worn out at once, the day is over.</p>
+        <p id="t-week" class="weekline"></p>
+        <div id="t-days" class="days"></div>
+        <div class="row"><button id="t-back3">◀ Back</button><button id="t-go" class="primary">Open the doors ▶</button></div>
+        <p id="t-resetline" class="resetline"></p>
+        <p class="keys touchkeys">On a phone: the stick moves · <b>E</b> (hold) fixes and stays with a robot · tap a robot or its card to steer it · <b>👁</b> on a card follows a robot · <b>🤖 AI</b> lets the robots work on their own · <b>⇅ Floor</b> shows the other floor · <b>⏩</b> speeds up the day · <b>⏸</b> pause</p>
+        <p class="keys kbkeys">WASD / ZQSD / arrows move · 1 2 3 / Tab switch robot · E / Space action (hold) · 0 let the AI run all · F / PgUp / PgDn switch the floor you see · T speed ×1 ×2 · P / Esc pause (R there restarts the day) · M mute · N playtest note</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="paused" class="overlay hidden">
+    <div class="panel">
+      <h2>Paused</h2>
+      <button id="p-resume" class="primary">Resume</button>
+      <button id="p-restart">↻ Restart the day (R)</button>
+      <button id="p-arrow">➜ Guide arrow: on</button>
+      <button id="p-lines">💬 Save what everyone said</button>
+      <button id="p-quit">Back to title</button>
+    </div>
+  </section>
+
+  <section id="results" class="overlay hidden">
+    <div class="panel">
+      <div class="kicker" id="r-kicker"></div>
+      <div id="r-stars"></div>
+      <div id="r-next" class="next"></div>
+      <h2 id="r-title"></h2>
+      <p id="r-moment" class="moment"></p>
+      <div id="r-robots"></div>
+      <p id="r-moral" class="goal"></p>
+      <table id="r-rows"></table>
+      <div class="row stack">
+        <button id="r-retry" class="primary">↻ Play again</button>
+        <button id="r-again" class="hidden">↻ Try this day again for ★★★</button>
+        <button id="r-log">💾 Save this day's log</button>
+        <button id="r-lines">💬 Save what everyone said</button>
+        <button id="r-menu">Title</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- after Friday: the whole week, on its own screen -->
+  <section id="week" class="overlay hidden">
+    <div class="panel">
+      <div class="kicker">THE DEVOXX WEEK IS OVER</div>
+      <h2 id="w-title"></h2>
+      <div id="w-week" class="week"></div>
+      <p class="goal">Even the best robots need a break.<br><b>So do you.</b></p> <!-- the Devoxx crowd knows the feeling -->
+      <div class="row stack">
+        <button id="w-new" class="primary">▶ Start a new week (Monday)</button>
+        <button id="w-again">↻ Play Friday again</button>
+        <button id="w-menu">Title</button>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "overclocked",
+  "version": "1.0.0",
+  "description": "Overclocked: look after Voxxy, Droid and Biggy, who don't know when to stop, through a Devoxx week at the Kinepolis Antwerp.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "npx --yes serve@14 -l 8080 .",
+    "sim": "node tools/sim.mjs",
+    "test": "node tools/robots-test.mjs"
+  }
+}
